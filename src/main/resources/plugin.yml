@@ -1,0 +1,4 @@
+name: LocksAndLockpicking
+version: 1.0
+main: io.github.mathias0903.LocksAndLockpicking.Main
+api-version: 1.14.4
