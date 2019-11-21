@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FreeMultiBlock implements ConfigurationSerializable {
+public class FreeMultiBlock {
     private String id;
     private ArrayList<Material> blocks = new ArrayList<Material>();
     private ArrayList<Material> keyBlocks = new ArrayList<Material>();
@@ -29,24 +29,6 @@ public class FreeMultiBlock implements ConfigurationSerializable {
         this.size = size;
         this.actionType = actionType;
         this.command = command;
-    }
-    public FreeMultiBlock(Map<String, Object> serializedFreeMultiBlock) {
-        this.id = (String) serializedFreeMultiBlock.get("id");
-        this.size = (RelativeLocation) serializedFreeMultiBlock.get("size");
-        this.actionType = Action.valueOf((String) serializedFreeMultiBlock.get("actionType"));
-        this.command = (String) serializedFreeMultiBlock.get("command");
-
-        ArrayList<String> keyStrings = (ArrayList<String>) serializedFreeMultiBlock.get("keyBlocks");
-        ArrayList<Material> deserializedKeyMaterialContainer = new ArrayList<>(); // temporary container for deserialized allergies
-        for (String serializedMaterial : keyStrings)
-            deserializedKeyMaterialContainer.add(Material.valueOf(serializedMaterial));
-        this.keyBlocks = deserializedKeyMaterialContainer;
-
-        ArrayList<String> strings = (ArrayList<String>) serializedFreeMultiBlock.get("nlocks");
-        ArrayList<Material> deserializedMaterialContainer = new ArrayList<>(); // temporary container for deserialized allergies
-        for (String serializedMaterial : strings)
-            deserializedMaterialContainer.add(Material.valueOf(serializedMaterial));
-        this.blocks = deserializedKeyMaterialContainer;
     }
 
     public boolean isFreeMultiBlock(Block sb) {
@@ -134,27 +116,5 @@ public class FreeMultiBlock implements ConfigurationSerializable {
 
     public void setCommand(String command) {
         this.command = command;
-    }
-
-    @Override
-    public Map<String, Object> serialize() {
-        HashMap<String, Object> mapSerializer = new HashMap<>();
-
-        mapSerializer.put("id", id);
-        mapSerializer.put("actionType", actionType.name());
-        mapSerializer.put("command", command);
-        mapSerializer.put("size", size);
-
-        ArrayList<String> tempSerializeKeyBlocks = new ArrayList<>(); // Using this as temporary container allowing us to serialize each allergy into a list
-        for(Material keyBlock : this.keyBlocks)
-            tempSerializeKeyBlocks.add(keyBlock.name());
-        mapSerializer.put("keyBlocks", tempSerializeKeyBlocks);
-
-        ArrayList<String> tempSerializeBlocks = new ArrayList<>(); // Using this as temporary container allowing us to serialize each allergy into a list
-        for(Material block : this.blocks)
-            tempSerializeBlocks.add(block.name());
-        mapSerializer.put("blocks", tempSerializeBlocks);
-
-        return mapSerializer;
     }
 }

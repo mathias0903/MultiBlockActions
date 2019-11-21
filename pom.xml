@@ -41,6 +41,7 @@
             <groupId>com.sk89q.worldedit</groupId>
             <artifactId>worldedit-bukkit</artifactId>
             <version>7.0.0-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
     <build>
@@ -62,7 +63,7 @@
                     <relocations>
                         <relocation>
                             <pattern>de.tr7zw.changeme.nbtapi</pattern>
-                            <shadedPattern>io.github.mathias0903.LocksAndLockpicking.nbtapi</shadedPattern>
+                            <shadedPattern>io.github.mathias0903.MultiBlockActions.nbtapi</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>

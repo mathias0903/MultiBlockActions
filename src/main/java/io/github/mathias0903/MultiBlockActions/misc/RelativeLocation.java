@@ -7,23 +7,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class RelativeLocation implements ConfigurationSerializable {
+public class RelativeLocation {
     private int y;
     private int x;
     private int z;
 
-    public RelativeLocation(int y, int x, int z) {
+    public RelativeLocation(int x, int y, int z) {
         this.y = y;
         this.x = x;
         this.z = z;
     }
-    public RelativeLocation(Map<String, Object> serializedRelativeLocation) {
-        this.y = (int) serializedRelativeLocation.get("y");
-        this.x = (int) serializedRelativeLocation.get("x");
-        this.z = (int) serializedRelativeLocation.get("z");
-    }
     public RelativeLocation rotateCW() {
-        return new RelativeLocation(this.y, this.z, -this.x);
+        return new RelativeLocation(this.z, this.y, -this.x);
     }
 
     public int getY() {
@@ -51,6 +46,15 @@ public class RelativeLocation implements ConfigurationSerializable {
     }
 
     @Override
+    public String toString() {
+        return "RelativeLocation{" +
+                "x=" + x +
+                ", y=" + y +
+                ", z=" + z +
+                '}';
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -65,14 +69,4 @@ public class RelativeLocation implements ConfigurationSerializable {
         return Objects.hash(y, x, z);
     }
 
-    @Override
-    public Map<String, Object> serialize() {
-        HashMap<String, Object> mapSerializer = new HashMap<>();
-
-        mapSerializer.put("x", x);
-        mapSerializer.put("y", x);
-        mapSerializer.put("z", x);
-
-        return mapSerializer;
-    }
 }

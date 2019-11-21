@@ -1,5 +1,6 @@
 package io.github.mathias0903.MultiBlockActions;
 
+import io.github.mathias0903.MultiBlockActions.Commands.MainCommand;
 import io.github.mathias0903.MultiBlockActions.Listener.BlockClick;
 import io.github.mathias0903.MultiBlockActions.Manager.MultiBlockManager;
 import io.github.mathias0903.MultiBlockActions.misc.RelativeLocation;
@@ -12,13 +13,14 @@ public class Main extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        ConfigurationSerialization.registerClass(LockedMultiBlock.class);
-        ConfigurationSerialization.registerClass(FreeMultiBlock.class);
-        ConfigurationSerialization.registerClass(RelativeLocation.class);
+        instance = this;
 
         multiBlockManager = new MultiBlockManager();
+        multiBlockManager.loadMultiBlocks();
 
         getServer().getPluginManager().registerEvents(new BlockClick(), this);
+
+        this.getCommand("MultiBlock").setExecutor(new MainCommand());
 
         getLogger().info("onEnable is called!");
     }

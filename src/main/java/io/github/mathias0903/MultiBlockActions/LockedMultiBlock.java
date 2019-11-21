@@ -1,8 +1,10 @@
 package io.github.mathias0903.MultiBlockActions;
 
+import io.github.mathias0903.MultiBlockActions.Manager.Config;
 import io.github.mathias0903.MultiBlockActions.misc.Action;
 import io.github.mathias0903.MultiBlockActions.misc.RelativeLocation;
 import org.bukkit.Location;
+import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
@@ -15,7 +17,7 @@ import java.util.Map;
 
 import static java.lang.System.currentTimeMillis;
 
-public class LockedMultiBlock implements ConfigurationSerializable {
+public class LockedMultiBlock {
     private String id;
     private HashMap<RelativeLocation, BlockData> blocks;
     private ArrayList<RelativeLocation> keyBlocks;
@@ -29,24 +31,14 @@ public class LockedMultiBlock implements ConfigurationSerializable {
         this.actionType = actionType;
         this.command = command;
     }
-    public LockedMultiBlock(Map<String, Object> serializedLockedMultiBlock) {
-        this.id = (String) serializedLockedMultiBlock.get("id");
-        this.blocks = (HashMap<RelativeLocation, BlockData>) serializedLockedMultiBlock.get("blocks");
-        this.actionType = Action.valueOf((String) serializedLockedMultiBlock.get("actionType"));
-        this.command = (String) serializedLockedMultiBlock.get("command");
-
-        ArrayList<Map<String, Object>> mappedRelativeLocation = (ArrayList<Map<String, Object>>) serializedLockedMultiBlock.get("keyBlocks");
-        ArrayList<RelativeLocation> deserializedRelativeLocationContainer = new ArrayList<>(); // temporary container for deserialized allergies
-        for (Map<String, Object> serializedRelativeLocation : mappedRelativeLocation)
-            deserializedRelativeLocationContainer.add(new RelativeLocation(serializedRelativeLocation));
-        this.keyBlocks = deserializedRelativeLocationContainer;
-    }
 
     public boolean isLockedMultiBlock(Block startBlock) {
         long start = currentTimeMillis();
-        if(this.blocks.containsValue(startBlock.getBlockData())) {
+        BlockData data = startBlock.getBlockData();
+        if(this.blocks.containsValue(data)) {
             for (Map.Entry me : this.blocks.entrySet()) {
-                if(me.getValue().equals(startBlock.getBlockData())) {
+                BlockData lockedData = (BlockData) me.getValue();
+                if(lockedData.equals(data)) {
                     HashMap<RelativeLocation, BlockData> copyBlocks = (HashMap<RelativeLocation, BlockData>) this.blocks.clone();
                     for (int i = 0; i < 4; i++) {
                         RelativeLocation clickedLocation = (RelativeLocation) me.getKey();
@@ -55,7 +47,7 @@ public class LockedMultiBlock implements ConfigurationSerializable {
                             Location origin = new Location(startBlock.getWorld(), startBlock.getX() - clickedLocation.getX(), startBlock.getY() - clickedLocation.getY(), startBlock.getZ() - clickedLocation.getZ());
                             for (Map.Entry inner : copyBlocks.entrySet()) {
                                 RelativeLocation relative = (RelativeLocation) inner.getKey();
-                                BlockData blockData_is = origin.add(relative.getX(), relative.getY(), relative.getZ()).getBlock().getBlockData();
+                                BlockData blockData_is = origin.clone().add(relative.getX(), relative.getY(), relative.getZ()).getBlock().getBlockData();
                                 BlockData blockData_should = (BlockData) inner.getValue();
                                 if (!blockData_is.equals(blockData_should)) {
                                     isCorrect = false;
@@ -108,9 +100,13 @@ public class LockedMultiBlock implements ConfigurationSerializable {
             p.performCommand(command);
         }
         else if(actionType.equals(Action.COMMANDASOP)) {
-            p.setOp(true);
-            p.performCommand(command);
-            p.setOp(false);
+            if(p.isOp()) {
+                p.performCommand(command);
+            } else {
+                p.setOp(true);
+                p.performCommand(command);
+                p.setOp(false);
+            }
         }
     }
 
@@ -152,24 +148,5 @@ public class LockedMultiBlock implements ConfigurationSerializable {
 
     public void setCommand(String command) {
         this.command = command;
-    }
-
-    @Override
-    public Map<String, Object> serialize() {
-        HashMap<String, Object> mapSerializer = new HashMap<>();
-
-        mapSerializer.put("id", id);
-        mapSerializer.put("blocks", blocks);
-        mapSerializer.put("actionType", actionType.name());
-        mapSerializer.put("command", command);
-
-
-
-        ArrayList<Map<String, Object>> tempSerializeKeyBlocks = new ArrayList<>(); // Using this as temporary container allowing us to serialize each allergy into a list
-        for(RelativeLocation keyBlock : this.keyBlocks)
-            tempSerializeKeyBlocks.add(keyBlock.serialize());
-        mapSerializer.put("keyBlocks", tempSerializeKeyBlocks);
-
-        return mapSerializer;
     }
 }
