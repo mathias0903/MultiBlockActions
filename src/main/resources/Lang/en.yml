@@ -1,0 +1,5 @@
+#Language file for MultiBlockActions
+prefix: "[MultiBlockActions]"
+command:
+  warnings:
+    noneExsisting: "This command doesn't exist!"
